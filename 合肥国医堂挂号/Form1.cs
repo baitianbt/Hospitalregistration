@@ -196,7 +196,7 @@ namespace 合肥国医堂挂号
                 morOr = "2";
             }
             date = dateTimePicker1.Value.ToString("yyyy-MM-dd");
-            dateweek = dateTimePicker1.Value.DayOfWeek.ToString();
+            dateweek = ((int)dateTimePicker1.Value.DayOfWeek).ToString();
 
 
              targetUrl = $"http://gyt.lpxxkj.com/index.php?m=&c=wx_index&a=doc_reg&week={dateweek}&day={morOr}&date={date}&doc_id={doc_id}";
