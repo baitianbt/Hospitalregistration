@@ -19,6 +19,7 @@ namespace 合肥国医堂挂号
         private List<CoreWebView2Cookie> storedCookies;
         private System.Threading.Timer timer;
         private string targetUrl;
+        private  HttpClient client;
 
         public Form1()
         {
@@ -260,24 +261,49 @@ namespace 合肥国医堂挂号
             }
             handler.CookieContainer = cookieContainer;
 
-            var client = new HttpClient(handler);
+             client = new HttpClient(handler);
 
             var tasks = new List<Task>();
 
-            // Send multiple requests concurrently
+            // 创建一个取消令牌源
+            CancellationTokenSource cts = new CancellationTokenSource();
+            CancellationToken token = cts.Token;
+
+            // 启动多个任务，每个任务在不同的线程上运行
             for (int i = 0; i < Environment.ProcessorCount; i++)
             {
-                tasks.Add(client.GetStringAsync(PageUrl));
+                tasks.Add(Task.Run(() => SendRequestsContinuously(token), token));
             }
+
+            // 设置一个定时器，10秒后取消所有任务
+            Task.Delay(10000).ContinueWith(_ => cts.Cancel());
 
             try
             {
+                // 等待所有任务完成
                 await Task.WhenAll(tasks);
-                MessageBox.Show("All requests sent successfully.");
+                MessageBox.Show("Stopped sending requests after 10 seconds.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to send requests: {ex.Message}");
+                MessageBox.Show($"Error occurred: {ex.Message}");
+            }
+        }
+
+
+        private  async Task SendRequestsContinuously(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    var response = await client.GetStringAsync(targetUrl);
+                    Console.WriteLine("Request sent successfully.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to send request: {ex.Message}");
+                }
             }
         }
     }
