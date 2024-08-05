@@ -174,7 +174,7 @@ namespace 合肥国医堂挂号
 
             targetUrl = $"http://gyt.lpxxkj.com/index.php?m=&c=wx_index&a=doc_reg&week={dateweek}&day={morOr}&date={date}&doc_id={doc_id}";
 
-            DateTime targetTime = DateTime.Today.AddHours(15).AddMinutes(38).AddSeconds(30);
+            DateTime targetTime = DateTime.Today.AddHours(8).AddMinutes(29).AddSeconds(58);
             if (DateTime.Now > targetTime)
             {
                 targetTime = targetTime.AddDays(1);
